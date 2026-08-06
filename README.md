@@ -13,8 +13,8 @@ AFTER FIRST DEPLOYMENT, YOU MUST ADD A PEER TO WIREGUARD IN ORDER FOR PEERS TO P
 
 ```
 mkdir softether-vpn && \
-curl -L https://github.com/AngelGonePro/StratumVPN/raw/main/Full_VPN_Config.zip | \
-bsdtar -xvf - -C softether-vpn
+curl -L https://github.com/AngelGonePro/StratumVPN/archive/refs/heads/main.tar.gz | \
+tar -xz --strip-components=1 -C softether-vpn
 ```
 
 `WindScribe-Upstream` FOLDER IS ONLY FOR ROUTING TRAFFIC THROUGH WINDSCRIBE VPN
