@@ -11,6 +11,10 @@ AFTER FIRST DEPLOYMENT, YOU MUST ADD A PEER TO WIREGUARD IN ORDER FOR PEERS TO P
 
 `Full_VPN_Config.zip` has all the files inside if you use `curl` on linux or download it.
 
+```
+mkdir softether-vpn && curl -L https://github.com/AngelGonePro/StratumVPN/archive/refs/heads/Full_VPN_Config.zip | bsdtar -xvf - --strip-components=1 -C softether-vpn
+```
+
 `WindScribe-Upstream` FOLDER IS ONLY FOR ROUTING TRAFFIC THROUGH WINDSCRIBE VPN
 
 FOR `WindScribe-Upstream` if you edit the `.env`, then run this:
