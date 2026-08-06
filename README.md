@@ -69,7 +69,7 @@ nano ~/softether-vpn/.env
 # Change: SERVER_IP, HOST_WG_DATA, all passwords, ports if needed
 
 # 4. Fix WireGuard permissions
-mkdir -p wg-data
+mkdir -p ~/softether-vpn/wg-data
 chmod -R a+rX ~/softether-vpn/wg-data/
 
 # 5.
