@@ -64,7 +64,7 @@ mkdir -p ~/softether-vpn/softether ~/softether-vpn/wg-api ~/softether-vpn/ui
 # scp -r C:\path\to\softether-vpn\* root@NEW_IP:/root/softether-vpn/
 
 # 3. Copy and edit .env
-cp ~/softether-vpn/.env.example ~/softether-vpn/.env
+cp ~/dns/softether-vpn/env.example ~/dns/softether-vpn/.env
 nano ~/softether-vpn/.env
 # Change: SERVER_IP, HOST_WG_DATA, all passwords, ports if needed
 
