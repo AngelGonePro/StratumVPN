@@ -13,9 +13,9 @@ AFTER FIRST DEPLOYMENT, YOU MUST ADD A PEER TO WIREGUARD IN ORDER FOR PEERS TO P
 
 ```
 mkdir softether-vpn && \
-curl -L -o vpn.zip https://raw.githubusercontent.com/AngelGonePro/StratumVPN/refs/heads/main/Full_VPN_Config.zip && \
-unzip vpn.zip -d softether-vpn && \
-rm vpn.zip
+curl -L -o /tmp/vpn.zip https://raw.githubusercontent.com/AngelGonePro/StratumVPN/refs/heads/main/Full_VPN_Config.zip && \
+python3 -c "import zipfile; zipfile.ZipFile('/tmp/vpn.zip').extractall('softether-vpn')" && \
+rm /tmp/vpn.zip
 ```
 
 `WindScribe-Upstream` FOLDER IS ONLY FOR ROUTING TRAFFIC THROUGH WINDSCRIBE VPN
