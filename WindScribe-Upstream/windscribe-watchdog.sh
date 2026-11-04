@@ -13,10 +13,34 @@ fi
 # Find gateway interface by IP subnet (not eth name - survives reboots)
 GW_IFACE=$(docker exec windscribe-gw ip -o addr show 2>/dev/null | awk '/10\.200\.0\./ {print $2}')
 GW="10.200.0.1"
+WSENV='export DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus XDG_RUNTIME_DIR=/run/user/1000'
+
+# The Windscribe app itself (not just the tunnel) can die. windscribe-cli
+# cannot start it ("Could not start application"), so connect alone never
+# recovers that. The container shares the host's PID namespace, so the app
+# is visible here. If it's gone, start it the same way as by hand, then wait
+# until the CLI can talk to it.
+ensure_app() {
+    pgrep -f '^/opt/windscribe/Windscribe( |$)' >/dev/null && return 0
+    echo "Windscribe app not running - starting it"
+    docker exec -d windscribe-gw su - wsuser -c \
+        "$WSENV; nohup /opt/windscribe/Windscribe >/tmp/windscribe-app.log 2>&1"
+    for i in $(seq 30); do
+        sleep 2
+        st=$(docker exec windscribe-gw su - wsuser -c "$WSENV; windscribe-cli status" 2>/dev/null)
+        if echo "$st" | grep -q "Login state"; then
+            echo "$st" | grep -q "Logged in" || echo "Windscribe is LOGGED OUT - log in again: machinectl shell wsuser@ /bin/bash, then windscribe-cli login"
+            return 0
+        fi
+    done
+    echo "Windscribe app did not come up - see /tmp/windscribe-app.log in windscribe-gw"
+    return 1
+}
 
 # Check if utun420 is up
 if ! nsenter -t $WSPID -n ip link show utun420 &>/dev/null; then
     docker exec windscribe-gw ip route add default via $GW dev $GW_IFACE 2>/dev/null || true
+    ensure_app
     docker exec windscribe-gw su - wsuser -c \
         'export DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus && windscribe-cli connect Ranch wireguard' 2>/dev/null
     sleep 15
@@ -27,6 +51,7 @@ fi
 # Check internet through tunnel
 if ! nsenter -t $WSPID -n ping -c 1 -W 3 -I utun420 8.8.8.8 &>/dev/null; then
     docker exec windscribe-gw ip route add default via $GW dev $GW_IFACE 2>/dev/null || true
+    ensure_app
     docker exec windscribe-gw su - wsuser -c \
         'export DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus && windscribe-cli connect Ranch wireguard' 2>/dev/null
     exit 0
